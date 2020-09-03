@@ -47,7 +47,6 @@
 ;;; Define Back-End
 
 (org-export-define-derived-backend 'gfm 'md
-  :filters-alist '((:filter-body . org-gfm-filter-body))
   :menu-entry
   '(?g "Export to Github Flavored Markdown"
        ((?G "To temporary buffer"
@@ -64,7 +63,8 @@
                      (src-block . org-gfm-src-block)
                      (table-cell . org-gfm-table-cell)
                      (table-row . org-gfm-table-row)
-                     (table . org-gfm-table))
+                     (table . org-gfm-table)
+                     (template . org-gfm-template))
   ;; KEY KEYWORD OPTION DEFAULT BEHAVIOR
   :options-alist '((:last-modified "LAST_MODIFIED" nil (format-time-string "<%Y-%m-%d %a>"))
                    (:gfm-layout "GFM_LAYOUT" nil org-gfm-layout)
@@ -127,60 +127,6 @@ convert to ((foo . \"bar\") (baz . 1) (zoo . \"two words\"))."
    (lambda (elm)
      `(,(intern (substring (symbol-name (car elm)) 1)) . ,(cdr elm)))
    (org-babel-parse-header-arguments str)))
-
-
-;;; Filter Function
-
-;;;; :filter-body
-
-(defun org-gfm-filter-body (str _backend info)
-  "Add frontmatter in Github Flavoured Markdown format.
-STR is GFM formart string, BACKEND is 'gfm as symbol,
-INFO is communication channel."
-  (with-current-buffer "*org-scratch*"
-    (erase-buffer)
-    (insert (ppp-list-to-string info)))
-  (cl-flet ((strgen (key fmt &optional fn)
-                    (let ((val (plist-get info key)))
-                      (when (and val
-                                 (if (stringp val)
-                                     (not (string-empty-p val))
-                                   t))
-                        (format fmt (funcall (or fn 'identity) (plist-get info key)))))))
-    (format
-     (concat
-      "---\n"
-      (strgen :gfm-layout "layout: %s\n")
-      (strgen :author "author: [%s]\n" (lambda (elm) (string-join elm ", ")))
-      (strgen :title "title: \"%s\"\n" (lambda (elm) (car elm)))
-      (strgen :description "description: \"%s\"\n")
-      (strgen :gfm-category "category: %s\n")
-      (strgen :gfm-tags "tags: [%s]\n" (lambda (elm) (string-join elm ", ")))
-      (strgen :keywords "keywords: [%s]\n" (lambda (elm) (string-join elm ", ")))
-      (strgen :date "date: %s\n"
-              (lambda (elm)
-                (let ((val (if (listp elm) (car elm) elm)))
-                  (if (eq 'timestamp (car-safe val))
-                      (org-timestamp-format val org-gfm-date-format)
-                    (format-time-string org-gfm-date-format val)))))
-      (strgen :last-modified "last_modified: %s\n"
-              (lambda (elm)
-                (let ((val (if (listp elm) (car elm) elm)))
-                  (if (eq 'timestamp (car-safe val))
-                      (org-timestamp-format val org-gfm-date-format)
-                    (format-time-string org-gfm-date-format (date-to-time val))))))
-      (strgen :gfm-custom-front-matter
-              "%s\n"
-              (lambda (elm)
-                (mapconcat
-                 (lambda (elm)
-                   (format "%s: %s" (car elm) (cdr elm)))
-                 (org-gfm--parse-property-arguments elm)
-                 "\n")))
-      "---\n"
-      (or (strgen :gfm-header "%s\n") "\n")
-      str
-      (strgen :gfm-footer "\n\n%s\n")))))
 
 
 
@@ -422,7 +368,53 @@ holding export options."
          (toc-tail (if headlines "\n\n" "")))
     (org-trim (concat toc-string toc-tail contents "\n" (org-gfm-footnote-section info)))))
         
-
+(defun org-gfm-template (contents info)
+  "Add frontmatter in Github Flavoured Markdown format.
+CONTENTS is GFM formart string, INFO is communication channel."
+  (with-current-buffer "*org-scratch*"
+    (erase-buffer)
+    (insert (ppp-list-to-string info)))
+  (cl-flet ((strgen (key fmt &optional fn)
+                    (let ((val (plist-get info key)))
+                      (when (and val
+                                 (if (stringp val)
+                                     (not (string-empty-p val))
+                                   t))
+                        (format fmt (funcall (or fn 'identity) (plist-get info key)))))))
+    (format
+     (concat
+      "---\n"
+      (strgen :gfm-layout "layout: %s\n")
+      (strgen :author "author: [%s]\n" (lambda (elm) (string-join elm ", ")))
+      (strgen :title "title: \"%s\"\n" (lambda (elm) (car elm)))
+      (strgen :description "description: \"%s\"\n")
+      (strgen :gfm-category "category: %s\n")
+      (strgen :gfm-tags "tags: [%s]\n" (lambda (elm) (string-join elm ", ")))
+      (strgen :keywords "keywords: [%s]\n" (lambda (elm) (string-join elm ", ")))
+      (strgen :date "date: %s\n"
+              (lambda (elm)
+                (let ((val (if (listp elm) (car elm) elm)))
+                  (if (eq 'timestamp (car-safe val))
+                      (org-timestamp-format val org-gfm-date-format)
+                    (format-time-string org-gfm-date-format val)))))
+      (strgen :last-modified "last_modified: %s\n"
+              (lambda (elm)
+                (let ((val (if (listp elm) (car elm) elm)))
+                  (if (eq 'timestamp (car-safe val))
+                      (org-timestamp-format val org-gfm-date-format)
+                    (format-time-string org-gfm-date-format (date-to-time val))))))
+      (strgen :gfm-custom-front-matter
+              "%s\n"
+              (lambda (elm)
+                (mapconcat
+                 (lambda (elm)
+                   (format "%s: %s" (car elm) (cdr elm)))
+                 (org-gfm--parse-property-arguments elm)
+                 "\n")))
+      "---\n"
+      (or (strgen :gfm-header "%s\n") "\n")
+      contents
+      (strgen :gfm-footer "\n\n%s\n")))))
 
 
 
