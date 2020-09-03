@@ -57,7 +57,8 @@
             (lambda (a s v b)
               (if a (org-gfm-export-to-markdown t s v)
                 (org-open-file (org-gfm-export-to-markdown nil s v)))))))
-  :translate-alist '((inner-template . org-gfm-inner-template)
+  :translate-alist '((headline . org-gfm-headline)
+                     (inner-template . org-gfm-inner-template)
                      (paragraph . org-gfm-paragraph)
                      (strike-through . org-gfm-strike-through)
                      (src-block . org-gfm-src-block)
@@ -170,6 +171,22 @@ INFO is communication channel."
 
 
 ;;; Transcode Functions
+
+;;;; Headline
+
+(defcustom org-gfm-headline-offset 1
+  "Headline offset."
+  :group 'org-export-gfm
+  :type 'integer)
+
+(defun org-gfm-headline (headline contents info)
+  "Make HEADLINE string.
+CONTENTS is the headline contents.
+INFO is a plist used as a communication channel."
+  (let ((info (plist-put info :headline-offset
+                         (+ org-gfm-headline-offset
+                            (plist-get info :headline-offset)))))
+    (org-md-headline headline contents info)))
 
 ;;;; Paragraph
 
