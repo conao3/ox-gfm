@@ -68,6 +68,8 @@
   ;; KEY KEYWORD OPTION DEFAULT BEHAVIOR
   :options-alist '((:last-modified "LAST_MODIFIED" nil (format-time-string "<%Y-%m-%d %a>"))
                    (:gfm-layout "GFM_LAYOUT" nil org-gfm-layout)
+                   (:gfm-category "GFM_CATEGORY" nil org-gfm-category)
+                   (:gfm-tags "GFM_TAGS" nil org-gfm-tags nil nil space)
                    (:gfm-header "GFM_HEADER" nil org-gfm-header)
                    (:gfm-footer "GFM_FOOTER" nil org-gfm-footer)
                    (:gfm-custom-front-matter "GFM_CUSTOM_FRONT_MATTER" nil nil space)))
@@ -100,6 +102,16 @@ Please edit that org source instead of this file.
 ;; End:
 -->"
   "Default footer."
+  :group 'org-export-gfm
+  :type 'string)
+
+(defcustom org-gfm-category ""
+  "Default gfm category."
+  :group 'org-export-gfm
+  :type 'string)
+
+(defcustom org-gfm-tags ""
+  "Default gfm tags devided by spaces."
   :group 'org-export-gfm
   :type 'string)
 
@@ -142,7 +154,9 @@ INFO is communication channel."
       (strgen :author "author: [%s]\n" (lambda (elm) (string-join elm ", ")))
       (strgen :title "title: \"%s\"\n" (lambda (elm) (car elm)))
       (strgen :description "description: \"%s\"\n")
-      (strgen :keywords "tags: [%s]\n" (lambda (elm) (string-join elm ", ")))
+      (strgen :gfm-category "category: %s\n")
+      (strgen :gfm-tags "tags: [%s]\n" (lambda (elm) (string-join elm ", ")))
+      (strgen :keywords "keywords: [%s]\n" (lambda (elm) (string-join elm ", ")))
       (strgen :date "date: %s\n"
               (lambda (elm)
                 (let ((val (if (listp elm) (car elm) elm)))
