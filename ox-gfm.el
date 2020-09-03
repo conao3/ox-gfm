@@ -47,8 +47,7 @@
 ;;; Define Back-End
 
 (org-export-define-derived-backend 'gfm 'md
-  :filters-alist '((:filter-body . org-gfm-filter-body)
-                   (:filter-parse-tree . org-md-separate-elements))
+  :filters-alist '((:filter-body . org-gfm-filter-body))
   :menu-entry
   '(?g "Export to Github Flavored Markdown"
        ((?G "To temporary buffer"
