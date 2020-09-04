@@ -70,7 +70,7 @@
                    (:gfm-headline-offset "GFM_HEADLINE_OFFSET" nil org-gfm-headline-offset)
                    (:gfm-layout "GFM_LAYOUT" nil org-gfm-layout)
                    (:gfm-category "GFM_CATEGORY" nil org-gfm-category)
-                   (:gfm-tags "GFM_TAGS" nil org-gfm-tags nil nil space)
+                   (:gfm-tags "GFM_TAGS" nil org-gfm-tags)
                    (:gfm-header "GFM_HEADER" nil org-gfm-header)
                    (:gfm-footer "GFM_FOOTER" nil org-gfm-footer)
                    (:gfm-custom-front-matter "GFM_CUSTOM_FRONT_MATTER" nil nil space)))
