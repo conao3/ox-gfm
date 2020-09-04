@@ -67,6 +67,7 @@
                      (template . org-gfm-template))
   ;; KEY KEYWORD OPTION DEFAULT BEHAVIOR
   :options-alist '((:last-modified "LAST_MODIFIED" nil (format-time-string "<%Y-%m-%d %a>"))
+                   (:gfm-headline-offset "GFM_HEADLINE_OFFSET" nil org-gfm-headline-offset)
                    (:gfm-layout "GFM_LAYOUT" nil org-gfm-layout)
                    (:gfm-category "GFM_CATEGORY" nil org-gfm-category)
                    (:gfm-tags "GFM_TAGS" nil org-gfm-tags nil nil space)
@@ -143,10 +144,13 @@ convert to ((foo . \"bar\") (baz . 1) (zoo . \"two words\"))."
   "Make HEADLINE string.
 CONTENTS is the headline contents.
 INFO is a plist used as a communication channel."
-  (let ((info (plist-put info :headline-offset
-                         (+ org-gfm-headline-offset
-                            (plist-get info :headline-offset)))))
-    (org-md-headline headline contents info)))
+  (cl-flet ((parsenum (str) (if (not (stringp str))
+                                0
+                              (string-to-number str))))
+    (let ((info (plist-put info :headline-offset
+                           (+ (plist-get info :headline-offset)
+                              (parsenum (plist-get info :gfm-headline-offset))))))
+      (org-md-headline headline contents info))))
 
 ;;;; Paragraph
 
