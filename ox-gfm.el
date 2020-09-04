@@ -83,7 +83,7 @@
   :group 'org-export-gfm
   :type 'string)
 
-(defcustom org-gfm-layout "page"
+(defcustom org-gfm-layout "post"
   "Default layout for GFM frontmatter."
   :group 'org-export-gfm
   :type 'string)
