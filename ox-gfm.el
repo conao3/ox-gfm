@@ -71,8 +71,8 @@
                    (:gfm-layout "GFM_LAYOUT" nil org-gfm-layout)
                    (:gfm-category "GFM_CATEGORY" nil org-gfm-category)
                    (:gfm-tags "GFM_TAGS" nil org-gfm-tags)
-                   (:gfm-header "GFM_HEADER" nil org-gfm-header)
-                   (:gfm-footer "GFM_FOOTER" nil org-gfm-footer)
+                   (:gfm-preamble "GFM_PREAMBLE" nil org-gfm-preamble)
+                   (:gfm-postamble "GFM_POSTAMBLE" nil org-gfm-postamble)
                    (:gfm-custom-front-matter "GFM_CUSTOM_FRONT_MATTER" nil nil space)))
 
 
@@ -88,12 +88,12 @@
   :group 'org-export-gfm
   :type 'string)
 
-(defcustom org-gfm-header ""
+(defcustom org-gfm-preamble ""
   "Default header."
   :group 'org-export-gfm
   :type 'string)
 
-(defcustom org-gfm-footer "\
+(defcustom org-gfm-postamble "\
 <!--
 This file is generated from org file.
 Please edit that org source instead of this file.
@@ -417,9 +417,9 @@ CONTENTS is GFM formart string, INFO is communication channel."
                 (org-gfm--parse-property-arguments elm)
                 "\n")))
      "---\n"
-     (or (strgen :gfm-header "%s\n") "\n")
+     (or (strgen :gfm-preamble "%s\n") "\n")
      contents
-     (strgen :gfm-footer "\n\n%s\n"))))
+     (strgen :gfm-postamble "\n\n%s\n"))))
 
 
 
