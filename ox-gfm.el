@@ -375,9 +375,6 @@ holding export options."
 (defun org-gfm-template (contents info)
   "Add frontmatter in Github Flavoured Markdown format.
 CONTENTS is GFM formart string, INFO is communication channel."
-  (with-current-buffer "*org-scratch*"
-    (erase-buffer)
-    (insert (ppp-list-to-string info)))
   (cl-flet ((strgen (key fmt &optional fn)
                     (let ((val (plist-get info key)))
                       (when (and val
