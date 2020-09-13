@@ -147,9 +147,10 @@ INFO is a plist used as a communication channel."
   (cl-flet ((parsenum (str) (if (not (stringp str))
                                 0
                               (string-to-number str))))
-    (let ((info (plist-put info :headline-offset
-                           (+ (plist-get info :headline-offset)
-                              (parsenum (plist-get info :gfm-headline-offset))))))
+    (let* ((num (parsenum (plist-get info :gfm-headline-offset)))
+           (info (if (= 0 num)
+                     info
+                   (plist-put info :headline-offset num))))
       (org-md-headline headline contents info))))
 
 ;;;; Paragraph
