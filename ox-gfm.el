@@ -135,7 +135,7 @@ convert to ((foo . \"bar\") (baz . 1) (zoo . \"two words\"))."
 
 ;;;; Headline
 
-(defcustom org-gfm-headline-offset 1
+(defcustom org-gfm-headline-offset 0
   "Headline offset."
   :group 'org-export-gfm
   :type 'integer)
